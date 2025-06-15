@@ -9,7 +9,11 @@ import {
   CardTitle,
 } from "../components/ui/card";
 import { Input } from "../components/ui/input";
-import { Trash2Icon, SparklesIcon } from "lucide-react";
+import { Trash2Icon, SparklesIcon, Loader2Icon } from "lucide-react";
+import { useWriteContract } from "wagmi";
+import { avsAbi } from "@/lib/abi";
+import { avsAddress } from "@/lib/contracts";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
   component: App,
@@ -22,18 +26,40 @@ function App() {
   const [jsonOutput, setJsonOutput] = useState("");
   const [hashedJson, setHashedJson] = useState("");
   const [arweaveId, setArweaveId] = useState("");
+  const { writeContractAsync, isPending } = useWriteContract();
 
   const handleAddPair = () => {
     setKeyValues([...keyValues, { key: "", value: 0 }]);
   };
 
   const handleAddDummyData = () => {
-    const dummyData = [
-      { key: "BTC", value: 68000 },
-      { key: "ETH", value: 3500 },
-      { key: "SOL", value: 150 },
-      { key: "DOGE", value: 15 },
+    const cryptoPool = [
+      { key: "BTC", basePrice: 68000 },
+      { key: "ETH", basePrice: 3500 },
+      { key: "SOL", basePrice: 150 },
+      { key: "DOGE", basePrice: 15 },
+      { key: "ADA", basePrice: 1 },
+      { key: "XRP", basePrice: 1 },
+      { key: "DOT", basePrice: 7 },
+      { key: "LINK", basePrice: 15 },
+      { key: "AVAX", basePrice: 35 },
+      { key: "MATIC", basePrice: 1 },
     ];
+
+    // Shuffle the pool to get random items
+    const shuffledPool = [...cryptoPool].sort(() => 0.5 - Math.random());
+
+    // Select a random number of items (e.g., 3 to 5)
+    const numberOfItems = Math.floor(Math.random() * 3) + 3; // 3, 4, or 5 items
+    const selectedItems = shuffledPool.slice(0, numberOfItems);
+
+    const dummyData = selectedItems.map(({ key, basePrice }) => {
+      // Add some randomness to the price (+/- 50%)
+      const randomFactor = 1 + (Math.random() - 0.5) * 1;
+      const value = Math.round(basePrice * randomFactor);
+      return { key, value };
+    });
+
     setKeyValues(dummyData);
   };
 
@@ -92,6 +118,29 @@ function App() {
     const encodedData = encodeAbiParameters(abi, [dataEntries]);
     setHashedJson(keccak256(encodedData));
   }, [keyValues]);
+
+  const handleAddEntry = async () => {
+    const dataEntries = keyValues
+      .filter((item) => item.key && item.value !== 0)
+      .map(({ key, value }) => ({
+        key: key,
+        value: BigInt(value),
+      }));
+
+    toast.promise(
+      writeContractAsync({
+        address: avsAddress,
+        abi: avsAbi,
+        functionName: "add_entry",
+        args: [arweaveId, dataEntries],
+      }),
+      {
+        loading: "Adding entry...",
+        success: "Entry added successfully",
+        error: "Failed to add entry",
+      },
+    );
+  };
 
   return (
     <div className="container mx-auto px-4">
@@ -193,7 +242,14 @@ function App() {
       </Card>
 
       <div className="mt-4 mb-16">
-        <Button className="w-full">Add Entry</Button>
+        <Button
+          disabled={isPending}
+          className="w-full"
+          onClick={handleAddEntry}
+        >
+          {isPending && <Loader2Icon className="w-4 h-4 animate-spin" />}
+          {isPending ? "Adding entry..." : "Add Entry"}
+        </Button>
       </div>
     </div>
   );
