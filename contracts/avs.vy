@@ -28,7 +28,7 @@ event EntryAdded:
 
 
 @external
-def add_entry(arweave_id: String[64], data_entries: DynArray[Data, 16]):
+def add_entry(arweave_id: String[64], data_entries: DynArray[KVDataEntry, 16]):
     encoded: Bytes[4160] = abi_encode(data_entries)
     hash: bytes32 = keccak256(encoded)
 
