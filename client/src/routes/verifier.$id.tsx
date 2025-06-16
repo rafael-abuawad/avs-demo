@@ -1,4 +1,4 @@
-import { createFileRoute, useSearch } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { encodeAbiParameters, keccak256, parseAbiParameters } from "viem";
 import { Button } from "../components/ui/button";

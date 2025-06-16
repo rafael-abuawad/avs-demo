@@ -93,19 +93,12 @@ function App() {
   };
 
   const handleAddEntry = async () => {
-    toast.promise(
-      writeContractAsync({
-        address: avsAddress,
-        abi: avsAbi,
-        functionName: "add_entry",
-        args: [dataId, imageId, dataEntries],
-      }),
-      {
-        loading: "Adding entry...",
-        success: "Entry added successfully",
-        error: "Failed to add entry",
-      },
-    );
+    await writeContractAsync({
+      address: avsAddress,
+      abi: avsAbi,
+      functionName: "add_entry",
+      args: [dataId, imageId, dataEntries],
+    });
   };
 
   const generateArweaveId = () => {
