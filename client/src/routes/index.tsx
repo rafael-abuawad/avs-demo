@@ -13,6 +13,7 @@ import { Trash2Icon, SparklesIcon, Loader2Icon } from "lucide-react";
 import { useWriteContract } from "wagmi";
 import { avsAbi } from "@/lib/abi";
 import { avsAddress } from "@/lib/contracts";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
   component: App,
@@ -92,12 +93,19 @@ function App() {
   };
 
   const handleAddEntry = async () => {
-    await writeContractAsync({
-      address: avsAddress,
-      abi: avsAbi,
-      functionName: "add_entry",
-      args: [dataId, imageId, dataEntries],
-    });
+    toast.promise(
+      writeContractAsync({
+        address: avsAddress,
+        abi: avsAbi,
+        functionName: "add_entry",
+        args: [dataId, imageId, dataEntries],
+      }),
+      {
+        loading: "Adding entry...",
+        success: "Entry added successfully",
+        error: "Failed to add entry",
+      },
+    );
   };
 
   const generateArweaveId = () => {

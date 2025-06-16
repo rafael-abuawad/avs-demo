@@ -5,6 +5,7 @@ import { Web3Provider } from "../components/web3-provider";
 import { NoWallet } from "@/components/no-wallet";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/header";
+import { Toaster } from "@/components/ui/sonner";
 
 export const Route = createRootRoute({
   component: () => (
@@ -16,6 +17,7 @@ export const Route = createRootRoute({
             <NoWallet>
               <Outlet />
             </NoWallet>
+            <Toaster />
           </>
         </Web3Provider>
       </ThemeProvider>
