@@ -14,7 +14,12 @@ export const avsAbi = [
       },
       {
         indexed: false,
-        name: "arweave_id",
+        name: "data_id",
+        type: "string",
+      },
+      {
+        indexed: false,
+        name: "image_id",
         type: "string",
       },
       {
@@ -29,7 +34,11 @@ export const avsAbi = [
   {
     inputs: [
       {
-        name: "arweave_id",
+        name: "data_id",
+        type: "string",
+      },
+      {
+        name: "image_id",
         type: "string",
       },
       {
@@ -84,7 +93,11 @@ export const avsAbi = [
             type: "bytes32",
           },
           {
-            name: "arweave_id",
+            name: "data_id",
+            type: "string",
+          },
+          {
+            name: "image_id",
             type: "string",
           },
           {

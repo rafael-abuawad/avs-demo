@@ -1,12 +1,12 @@
 import { WagmiProvider, createConfig } from "wagmi";
-import { arbitrum } from "wagmi/chains";
+import { optimism } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 
 const config = createConfig(
   getDefaultConfig({
     // Your dApps chains
-    chains: [arbitrum],
+    chains: [optimism],
 
     // Required API Keys
     walletConnectProjectId: "",

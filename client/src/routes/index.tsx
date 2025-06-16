@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { encodeAbiParameters, keccak256, parseAbiParameters } from "viem";
 import { Button } from "../components/ui/button";
 import {
@@ -25,8 +25,20 @@ function App() {
   ]);
   const [jsonOutput, setJsonOutput] = useState("");
   const [hashedJson, setHashedJson] = useState("");
-  const [arweaveId, setArweaveId] = useState("");
+  const [dataId, setDataId] = useState("");
+  const [imageId, setImageId] = useState("");
   const { writeContractAsync, isPending } = useWriteContract();
+
+  const dataEntries = useMemo(
+    () =>
+      keyValues
+        .filter((item) => item.key && item.value !== 0)
+        .map(({ key, value }) => ({
+          key: key,
+          value: BigInt(value),
+        })),
+    [keyValues],
+  );
 
   const handleAddPair = () => {
     setKeyValues([...keyValues, { key: "", value: 0 }]);
@@ -80,7 +92,23 @@ function App() {
     setKeyValues(updatedKeyValues);
   };
 
-  const handleGenerateArweaveId = () => {
+  const handleAddEntry = async () => {
+    toast.promise(
+      writeContractAsync({
+        address: avsAddress,
+        abi: avsAbi,
+        functionName: "add_entry",
+        args: [dataId, imageId, dataEntries],
+      }),
+      {
+        loading: "Adding entry...",
+        success: "Entry added successfully",
+        error: "Failed to add entry",
+      },
+    );
+  };
+
+  const generateArweaveId = () => {
     const randomBytes = window.crypto.getRandomValues(new Uint8Array(32));
     const base64 = btoa(
       String.fromCharCode.apply(null, Array.from(randomBytes)),
@@ -89,17 +117,10 @@ function App() {
       .replace(/\+/g, "-")
       .replace(/\//g, "_")
       .replace(/=+$/, "");
-    setArweaveId(base64url);
+    return base64url;
   };
 
   useEffect(() => {
-    const dataEntries = keyValues
-      .filter((item) => item.key && item.value !== 0)
-      .map(({ key, value }) => ({
-        key: key,
-        value: BigInt(value),
-      }));
-
     if (dataEntries.length === 0) {
       setJsonOutput("");
       setHashedJson("");
@@ -117,30 +138,7 @@ function App() {
 
     const encodedData = encodeAbiParameters(abi, [dataEntries]);
     setHashedJson(keccak256(encodedData));
-  }, [keyValues]);
-
-  const handleAddEntry = async () => {
-    const dataEntries = keyValues
-      .filter((item) => item.key && item.value !== 0)
-      .map(({ key, value }) => ({
-        key: key,
-        value: BigInt(value),
-      }));
-
-    toast.promise(
-      writeContractAsync({
-        address: avsAddress,
-        abi: avsAbi,
-        functionName: "add_entry",
-        args: [arweaveId, dataEntries],
-      }),
-      {
-        loading: "Adding entry...",
-        success: "Entry added successfully",
-        error: "Failed to add entry",
-      },
-    );
-  };
+  }, [dataEntries]);
 
   return (
     <div className="container mx-auto px-4">
@@ -225,16 +223,22 @@ function App() {
 
       <Card className="mt-4">
         <CardHeader>
-          <CardTitle>Arweave ID</CardTitle>
+          <CardTitle>Image</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4">
-            <Button variant="outline" onClick={handleGenerateArweaveId}>
-              Upload File & Generate ID (mock)
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDataId(generateArweaveId());
+                setImageId(generateArweaveId());
+              }}
+            >
+              Upload File
             </Button>
-            {arweaveId && (
+            {imageId && (
               <pre className="whitespace-pre-wrap rounded-md bg-muted p-4">
-                <code className="break-words">{arweaveId}</code>
+                <code className="break-words">{imageId}</code>
               </pre>
             )}
           </div>
@@ -243,7 +247,9 @@ function App() {
 
       <div className="mt-4 mb-16">
         <Button
-          disabled={isPending}
+          disabled={
+            isPending || dataEntries.length === 0 || !dataId || !imageId
+          }
           className="w-full"
           onClick={handleAddEntry}
         >

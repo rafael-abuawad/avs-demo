@@ -7,33 +7,46 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  arbiscanExplorerLink,
-  arweaveExplorerLink,
-  formatAddress,
-  formatArweaveId,
-} from "@/lib/utils";
+import { avsAbi } from "@/lib/abi";
+import { avsAddress } from "@/lib/contracts";
+import { useReadContract } from "wagmi";
+import { Entry } from "@/components/entry";
 
 export const Route = createFileRoute("/entries")({
   component: RouteComponent,
 });
 
-const entries = [
-  {
-    registrator: "0x1234567890123456789012345678901234567890",
-    hash: "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
-    arweave_id: "arweave_id_1",
-    timestamp: "1672531199",
-  },
-  {
-    registrator: "0x0987654321098765432109876543210987654321",
-    hash: "0xfedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321",
-    arweave_id: "arweave_id_2",
-    timestamp: "1672531200",
-  },
-];
-
 function RouteComponent() {
+  const { data: entries, isPending } = useReadContract({
+    address: avsAddress,
+    abi: avsAbi,
+    functionName: "total_entries",
+  });
+
+  if (isPending) {
+    return (
+      <div className="container mx-auto px-4">
+        <Table className="border rounded-md">
+          <TableHeader>
+            <TableRow>
+              <TableHead>Registrator</TableHead>
+              <TableHead>Hash</TableHead>
+              <TableHead>Data ID</TableHead>
+              <TableHead>Image ID</TableHead>
+              <TableHead>Timestamp</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell>Loading...</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4">
       <Table className="border rounded-md">
@@ -41,36 +54,15 @@ function RouteComponent() {
           <TableRow>
             <TableHead>Registrator</TableHead>
             <TableHead>Hash</TableHead>
-            <TableHead>Arweave ID</TableHead>
+            <TableHead>Data ID</TableHead>
+            <TableHead>Image ID</TableHead>
             <TableHead>Timestamp</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {entries.map((entry) => (
-            <TableRow key={entry.hash}>
-              <TableCell>
-                <a
-                  className="hover:underline"
-                  href={arbiscanExplorerLink(entry.registrator, "address")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {formatAddress(entry.registrator)}
-                </a>
-              </TableCell>
-              <TableCell>{entry.hash}</TableCell>
-              <TableCell>
-                <a
-                  className="hover:underline"
-                  href={arweaveExplorerLink(entry.arweave_id)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {formatArweaveId(entry.arweave_id)}
-                </a>
-              </TableCell>
-              <TableCell>{entry.timestamp}</TableCell>
-            </TableRow>
+          {Array.from({ length: Number(entries) }, (_, i) => (
+            <Entry key={i} id={BigInt(i)} />
           ))}
         </TableBody>
       </Table>

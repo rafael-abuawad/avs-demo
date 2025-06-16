@@ -11,3 +11,4 @@ wheels/
 
 # Ape
 .build/
+.ruff_cache/

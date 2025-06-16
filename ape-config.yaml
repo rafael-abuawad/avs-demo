@@ -3,4 +3,4 @@ name: avs-demo
 plugins:
   - name: vyper
   - name: foundry
-  - name: arbitrum
+  - name: optimism

@@ -8,70 +8,88 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as EntriesRouteImport } from './routes/entries'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as rootRouteImport } from "./routes/__root";
+import { Route as EntriesRouteImport } from "./routes/entries";
+import { Route as IndexRouteImport } from "./routes/index";
+import { Route as VerifierIdRouteImport } from "./routes/verifier.$id";
 
 const EntriesRoute = EntriesRouteImport.update({
-  id: '/entries',
-  path: '/entries',
+  id: "/entries",
+  path: "/entries",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
+const VerifierIdRoute = VerifierIdRouteImport.update({
+  id: "/verifier/$id",
+  path: "/verifier/$id",
+  getParentRoute: () => rootRouteImport,
+} as any);
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/entries': typeof EntriesRoute
+  "/": typeof IndexRoute;
+  "/entries": typeof EntriesRoute;
+  "/verifier/$id": typeof VerifierIdRoute;
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/entries': typeof EntriesRoute
+  "/": typeof IndexRoute;
+  "/entries": typeof EntriesRoute;
+  "/verifier/$id": typeof VerifierIdRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/entries': typeof EntriesRoute
+  __root__: typeof rootRouteImport;
+  "/": typeof IndexRoute;
+  "/entries": typeof EntriesRoute;
+  "/verifier/$id": typeof VerifierIdRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/entries'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/entries'
-  id: '__root__' | '/' | '/entries'
-  fileRoutesById: FileRoutesById
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths: "/" | "/entries" | "/verifier/$id";
+  fileRoutesByTo: FileRoutesByTo;
+  to: "/" | "/entries" | "/verifier/$id";
+  id: "__root__" | "/" | "/entries" | "/verifier/$id";
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  EntriesRoute: typeof EntriesRoute
+  IndexRoute: typeof IndexRoute;
+  EntriesRoute: typeof EntriesRoute;
+  VerifierIdRoute: typeof VerifierIdRoute;
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/entries': {
-      id: '/entries'
-      path: '/entries'
-      fullPath: '/entries'
-      preLoaderRoute: typeof EntriesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+    "/entries": {
+      id: "/entries";
+      path: "/entries";
+      fullPath: "/entries";
+      preLoaderRoute: typeof EntriesRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/": {
+      id: "/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof IndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/verifier/$id": {
+      id: "/verifier/$id";
+      path: "/verifier/$id";
+      fullPath: "/verifier/$id";
+      preLoaderRoute: typeof VerifierIdRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EntriesRoute: EntriesRoute,
-}
+  VerifierIdRoute: VerifierIdRoute,
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
