@@ -13,7 +13,6 @@ import { Trash2Icon, SparklesIcon, Loader2Icon } from "lucide-react";
 import { useWriteContract } from "wagmi";
 import { avsAbi } from "@/lib/abi";
 import { avsAddress } from "@/lib/contracts";
-import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
   component: App,
