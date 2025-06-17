@@ -1,6 +1,6 @@
 # pragma version ^0.4.1
 # @title AVS
-# @license MIT
+# @license GPL-3.0
 # @author Rafael Abuawad <x.com/rabuawad>
 
 
