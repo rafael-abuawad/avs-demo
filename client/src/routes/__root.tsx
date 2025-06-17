@@ -1,7 +1,7 @@
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
-import { Web3Provider } from "../components/web3-provider";
+import { Web3Provider } from "@/components/web3-provider";
 import { NoWallet } from "@/components/no-wallet";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/header";

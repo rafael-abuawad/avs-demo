@@ -1,14 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { encodeAbiParameters, keccak256, parseAbiParameters } from "viem";
-import { Button } from "../components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
-import { Input } from "../components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Trash2Icon,
   SparklesIcon,
@@ -86,12 +81,16 @@ function Verifier() {
 
   const handleKeyChange = (index: number, newKey: string) => {
     const updatedKeyValues = [...keyValues];
+    if (!updatedKeyValues[index]) return;
+
     updatedKeyValues[index].key = newKey;
     setKeyValues(updatedKeyValues);
   };
 
   const handleValueChange = (index: number, newValue: number) => {
     const updatedKeyValues = [...keyValues];
+    if (!updatedKeyValues[index]) return;
+
     updatedKeyValues[index].value = newValue;
     setKeyValues(updatedKeyValues);
   };
@@ -101,7 +100,7 @@ function Verifier() {
       .filter((item) => item.key && item.value !== 0)
       .map(({ key, value }) => ({
         key: key,
-        value: BigInt(value),
+        value: isNaN(value) ? BigInt(0) : BigInt(value),
       }));
 
     if (dataEntries.length === 0) {
