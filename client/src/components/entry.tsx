@@ -5,6 +5,7 @@ import { useReadContract } from "wagmi";
 import { avsAbi } from "@/lib/abi";
 import { avsAddress } from "@/lib/contracts";
 import { Button } from "./ui/button";
+import { Link } from "@tanstack/react-router";
 
 export function Entry({ id }: { id: bigint }) {
   const { data: entry } = useReadContract({
@@ -54,7 +55,9 @@ export function Entry({ id }: { id: bigint }) {
       <TableCell>{entry.timestamp}</TableCell>
       <TableCell>
         <Button variant="outline" asChild>
-          <a href={`/verifier/${id}`}>Verify</a>
+          <Link to="/verifier/$id" params={{ id: id.toString() }}>
+            Verify
+          </Link>
         </Button>
       </TableCell>
     </TableRow>
