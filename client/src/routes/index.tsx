@@ -5,16 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Trash2Icon, SparklesIcon, Loader2Icon } from "lucide-react";
-import { useWriteContract } from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
 import { avsAbi } from "@/lib/abi";
 import { avsAddress } from "@/lib/contracts";
 import { toast } from "sonner";
+import { ConnectKitButton } from "connectkit";
+import { NoWallet } from "@/components/no-wallet";
 
 export const Route = createFileRoute("/")({
   component: App,
 });
 
 function App() {
+  const { isConnected } = useAccount();
   const [keyValues, setKeyValues] = useState<{ key: string; value: number }[]>([
     { key: "", value: 0 },
   ]);
@@ -140,7 +143,7 @@ function App() {
   }, [dataEntries]);
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto px-4 relative">
       <Card>
         <CardHeader>
           <CardTitle>Key-Value Pairs</CardTitle>
@@ -245,17 +248,35 @@ function App() {
       </Card>
 
       <div className="mt-4 mb-16">
-        <Button
-          disabled={
-            isPending || dataEntries.length === 0 || !dataId || !imageId
-          }
-          className="w-full"
-          onClick={handleAddEntry}
-        >
-          {isPending && <Loader2Icon className="w-4 h-4 animate-spin" />}
-          {isPending ? "Adding entry..." : "Add Entry"}
-        </Button>
+        {isConnected ? (
+          <Button
+            disabled={
+              !isConnected ||
+              isPending ||
+              dataEntries.length === 0 ||
+              !dataId ||
+              !imageId
+            }
+            className="w-full"
+            onClick={handleAddEntry}
+          >
+            {isPending && <Loader2Icon className="w-4 h-4 animate-spin" />}
+            {isPending ? "Adding entry..." : "Add Entry"}
+          </Button>
+        ) : (
+          <ConnectKitButton.Custom>
+            {({ show }) => {
+              return (
+                <Button className="w-full" onClick={show}>
+                  Connect Wallet
+                </Button>
+              );
+            }}
+          </ConnectKitButton.Custom>
+        )}
       </div>
+
+      <NoWallet />
     </div>
   );
 }

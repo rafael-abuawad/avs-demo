@@ -2,27 +2,22 @@ import { ConnectKitButton } from "connectkit";
 import { useAccount } from "wagmi";
 import { Button } from "./ui/button";
 
-export function NoWallet({ children }: { children: React.ReactNode }) {
+export function NoWallet() {
   const { isConnected } = useAccount();
 
   if (isConnected) {
-    return <>{children}</>;
+    return null;
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <div className="flex flex-col items-center justify-center gap-2">
-        <h1 className="text-2xl font-bold">No Wallet Connected</h1>
+    <div className="absolute inset-0 flex items-center justify-center backdrop-blur-md">
+      <div className="flex flex-col items-center justify-center gap-4 p-8">
         <p className="text-sm text-muted-foreground">
-          Please connect your wallet to continue
+          To add an entry, please connect your wallet.
         </p>
         <ConnectKitButton.Custom>
-          {({ isConnected, show }) => {
-            return (
-              <Button onClick={show}>
-                {isConnected ? "Connected" : "Connect Wallet"}
-              </Button>
-            );
+          {({ show }) => {
+            return <Button onClick={show}>Connect Wallet</Button>;
           }}
         </ConnectKitButton.Custom>
       </div>
